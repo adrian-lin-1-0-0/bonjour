@@ -49,23 +49,23 @@ func Register(instance, service, domain string, port int, text []string, iface *
 	entry.Text = text
 
 	if entry.Instance == "" {
-		return nil, fmt.Errorf("Missing service instance name")
+		return nil, fmt.Errorf("missing service instance name")
 	}
 	if entry.Service == "" {
-		return nil, fmt.Errorf("Missing service name")
+		return nil, fmt.Errorf("missing service name")
 	}
 	if entry.Domain == "" {
 		entry.Domain = "local"
 	}
 	if entry.Port == 0 {
-		return nil, fmt.Errorf("Missing port")
+		return nil, fmt.Errorf("missing port")
 	}
 
 	var err error
 	if entry.HostName == "" {
 		entry.HostName, err = os.Hostname()
 		if err != nil {
-			return nil, fmt.Errorf("Could not determine host")
+			return nil, fmt.Errorf("could not determine host")
 		}
 	}
 	entry.HostName = fmt.Sprintf("%s.", trimDot(entry.HostName))
@@ -77,7 +77,7 @@ func Register(instance, service, domain string, port int, text []string, iface *
 		tmpHostName := fmt.Sprintf("%s%s.", entry.HostName, entry.Domain)
 		addrs, err = net.LookupIP(tmpHostName)
 		if err != nil {
-			return nil, fmt.Errorf("Could not determine host IP addresses for %s", entry.HostName)
+			return nil, fmt.Errorf("could not determine host IP addresses for %s", entry.HostName)
 		}
 	}
 	for i := 0; i < len(addrs); i++ {
@@ -109,19 +109,19 @@ func RegisterProxy(instance, service, domain string, port int, host, ip string, 
 	entry.HostName = host
 
 	if entry.Instance == "" {
-		return nil, fmt.Errorf("Missing service instance name")
+		return nil, fmt.Errorf("missing service instance name")
 	}
 	if entry.Service == "" {
-		return nil, fmt.Errorf("Missing service name")
+		return nil, fmt.Errorf("missing service name")
 	}
 	if entry.HostName == "" {
-		return nil, fmt.Errorf("Missing host name")
+		return nil, fmt.Errorf("missing host name")
 	}
 	if entry.Domain == "" {
 		entry.Domain = "local"
 	}
 	if entry.Port == 0 {
-		return nil, fmt.Errorf("Missing port")
+		return nil, fmt.Errorf("missing port")
 	}
 
 	if !strings.HasSuffix(trimDot(entry.HostName), entry.Domain) {
@@ -130,13 +130,13 @@ func RegisterProxy(instance, service, domain string, port int, host, ip string, 
 
 	ipAddr := net.ParseIP(ip)
 	if ipAddr == nil {
-		return nil, fmt.Errorf("Failed to parse given IP: %v", ip)
+		return nil, fmt.Errorf("failed to parse given IP: %v", ip)
 	} else if ipv4 := ipAddr.To4(); ipv4 != nil {
 		entry.AddrIPv4 = ipAddr
 	} else if ipv6 := ipAddr.To16(); ipv6 != nil {
 		entry.AddrIPv4 = ipAddr
 	} else {
-		return nil, fmt.Errorf("The IP is neither IPv4 nor IPv6: %#v", ipAddr)
+		return nil, fmt.Errorf("the IP is neither IPv4 nor IPv6: %#v", ipAddr)
 	}
 
 	s, err := newServer(iface)
@@ -173,7 +173,7 @@ func newServer(iface *net.Interface) (*Server, error) {
 		log.Printf("[ERR] bonjour: Failed to bind to udp6 port: %v", err)
 	}
 	if ipv4conn == nil && ipv6conn == nil {
-		return nil, fmt.Errorf("[ERR] bonjour: Failed to bind to any udp port!")
+		return nil, fmt.Errorf("[ERR] bonjour: Failed to bind to any udp port")
 	}
 
 	// Join multicast groups to receive announcements
@@ -201,7 +201,7 @@ func newServer(iface *net.Interface) (*Server, error) {
 			}
 		}
 		if len(ifaces) == errCount1 && len(ifaces) == errCount2 {
-			return nil, fmt.Errorf("Failed to join multicast group on all interfaces!")
+			return nil, fmt.Errorf("failed to join multicast group on all interfaces")
 		}
 	}
 
@@ -510,7 +510,7 @@ func (s *Server) serviceTypeName(resp *dns.Msg, ttl uint32) {
 }
 
 // Perform probing & announcement
-//TODO: implement a proper probing & conflict resolution
+// TODO: implement a proper probing & conflict resolution
 func (s *Server) probe() {
 	q := new(dns.Msg)
 	q.SetQuestion(s.service.ServiceInstanceName(), dns.TypePTR)
